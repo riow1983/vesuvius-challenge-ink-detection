@@ -45,6 +45,7 @@ class CFG(object):
         self.LEARNING_RATE = args["LEARNING_RATE"]
         self.TRAIN_RUN = args["TRAIN_RUN"] # To avoid re-running when saving the notebook
         self.BATCH_SIZE = args["BATCH_SIZE"]
+        self.VOXEL_SHAPE = (args["VOXEL_SHAPE"][0], args["VOXEL_SHAPE"][1], args["VOXEL_SHAPE"][2])
 
         if type(self.EXP) == str:
             self.TRAINING_STEPS = 60
@@ -69,32 +70,36 @@ print("#########################################################################
 if KAGGLE_ENV:
     out_path = Path("/kaggle/working/")
 else:
-    out_path = Path(f"/content/drive/MyDrive/colab_notebooks/kaggle/{comp_name}/output/{proj_name}/EXP-{args.EXP}/")
+    out_path = Path(f"/content/drive/MyDrive/colab_notebooks/kaggle/{comp_name}/output/{proj_name}/EXP-{args.EXP}-{proj_name}/")
     os.makedirs(out_path.as_posix(), exist_ok=True)
 
 all_fragments = sorted([f.name for f in train_path.iterdir()])
 print("All fragments:", all_fragments)
-# Due to limited memory on Kaggle, we can only load 1 full fragment
-if type(args.EXP) == str:
-    train_fragments = [train_path / fragment_name for fragment_name in ["1"]]
-else:
-    train_fragments = [train_path / fragment_name for fragment_name in ["1", "2", "3"]]
 
-if type(args.EXP) == str:
-    train_dset = SubvolumeDataset(fragments=train_fragments, voxel_shape=(6, 16, 16), filter_edge_pixels=True)
-else:
-    train_dset = SubvolumeDataset(fragments=train_fragments, voxel_shape=(48, 64, 64), filter_edge_pixels=True)
-print("Num items (pixels)", len(train_dset))
-
-
-
-
-train_loader = thd.DataLoader(train_dset, batch_size=args.BATCH_SIZE, shuffle=True)
-print("Num batches:", len(train_loader))
-
+if args.TRAIN_RUN:
+    # Due to limited memory on Kaggle, we can only load 1 full fragment
+    if type(args.EXP) == str:
+        train_fragments = [train_path / fragment_name for fragment_name in ["1"]]
+    else:
+        train_fragments = [train_path / fragment_name for fragment_name in ["1", "2", "3"]]
+    
+    if type(args.EXP) == str:
+        train_dset = SubvolumeDataset(fragments=train_fragments, voxel_shape=(6, 16, 16), filter_edge_pixels=True)
+    else:
+        train_dset = SubvolumeDataset(fragments=train_fragments, voxel_shape=args.VOXEL_SHAPE, filter_edge_pixels=True)
+    print("Num items (pixels)", len(train_dset))
+    
+    train_loader = thd.DataLoader(train_dset, batch_size=args.BATCH_SIZE, shuffle=True)
+    print("Num batches:", len(train_loader))
 
 
-
+# # Play ground
+# inputs, classes = next(iter(train_loader))
+# print("inputs.shape: ", inputs.shape)
+# print("classes.shape: ", classes.shape)
+# print("inputs:\n\n", inputs)
+# print("classes:\n\n", classes)
+# raise ValueError
 
 model = InkDetector().to(args.DEVICE)
 
@@ -152,7 +157,7 @@ if __name__ == '__main__':
     if not args.TRAIN_RUN:
         # Evaluate
 
-        test_fragments = [train_path / fragment_name for fragment_name in test_path.iterdir()]
+        test_fragments = [test_path / fragment_name for fragment_name in test_path.iterdir()]
         print("All fragments:", test_fragments)
 
         pred_images = []
@@ -163,7 +168,7 @@ if __name__ == '__main__':
             if type(args.EXP) == str:
                 eval_dset = SubvolumeDataset(fragments=[test_fragment], voxel_shape=(6, 16, 16), load_inklabels=False)
             else:
-                eval_dset = SubvolumeDataset(fragments=[test_fragment], voxel_shape=(48, 64, 64), load_inklabels=False)
+                eval_dset = SubvolumeDataset(fragments=[test_fragment], voxel_shape=args.VOXEL_SHAPE, load_inklabels=False)
             
             eval_loader = thd.DataLoader(eval_dset, batch_size=args.BATCH_SIZE, shuffle=False)
 
