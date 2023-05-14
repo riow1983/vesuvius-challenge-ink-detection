@@ -27,7 +27,7 @@ from tqdm import tqdm
 
 from dataset import SubvolumeDataset
 from model import InkDetector
-from utils import rle
+from utils import rle, send_line_notification
 warnings.simplefilter('ignore', UndefinedMetricWarning)
 
 import yaml
@@ -35,7 +35,6 @@ import shutil
 
 class CFG(object):
     def __init__(self, filepath):
-        self.DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
         with open(filepath) as file:
             args = yaml.load(file, Loader=yaml.FullLoader) # Loader is recommended
@@ -46,32 +45,44 @@ class CFG(object):
         self.TRAIN_RUN = args["TRAIN_RUN"] # To avoid re-running when saving the notebook
         self.BATCH_SIZE = args["BATCH_SIZE"]
         self.VOXEL_SHAPE = (args["VOXEL_SHAPE"][0], args["VOXEL_SHAPE"][1], args["VOXEL_SHAPE"][2])
+        self.WANDB = args["WANDB"]
 
         if type(self.EXP) == str:
-            self.TRAINING_STEPS = 60
+            self.TRAINING_STEPS = 1500
 
     
 
 comp_name = "vesuvius-challenge-ink-detection"
 proj_name = "vesuvius-challenge-example-submission"
+DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 KAGGLE_ENV = True if 'KAGGLE_URL_BASE' in set(os.environ.keys()) else False
 if KAGGLE_ENV:
     base_path = Path(f"/kaggle/input/{comp_name}/")
 else:
     base_path = Path(f"/content/drive/MyDrive/colab_notebooks/kaggle/{comp_name}/input/{comp_name}/")
+    json_path = Path("/content/drive/MyDrive/colab_notebooks/kaggle/")
 # base_path = Path("/kaggle/input/vesuvius-challenge/")
 train_path = base_path / "train"
 test_path = base_path / "test"
 args = CFG(f"/content/drive/MyDrive/colab_notebooks/kaggle/{comp_name}/src/{proj_name}/config.yaml")
-print("#######################################################################################")
-print(f"############ EXP: {args.EXP}, TRAIN_RUN: {args.TRAIN_RUN}, TRAINING_STEPS: {args.TRAINING_STEPS}, DEVICE: {args.DEVICE} ############")
-print("#######################################################################################")
+print("#################################################################################################################")
+print(f"############ EXP: {args.EXP}, TRAIN_RUN: {args.TRAIN_RUN}, TRAINING_STEPS: {args.TRAINING_STEPS}, DEVICE: {DEVICE}, VOXEL_SHAPE: {args.VOXEL_SHAPE} ############")
+print("#################################################################################################################")
 if KAGGLE_ENV:
     out_path = Path("/kaggle/working/")
 else:
     out_path = Path(f"/content/drive/MyDrive/colab_notebooks/kaggle/{comp_name}/output/{proj_name}/EXP-{args.EXP}-{proj_name}/")
     os.makedirs(out_path.as_posix(), exist_ok=True)
+
+if args.WANDB:
+    os.system("pip install wandb")
+    import wandb
+    from _wandb import build_wandb
+    wandbrun = build_wandb(wandb_json_path=json_path / "wandb.json", kaggle_env=KAGGLE_ENV, 
+                           dir=out_path, project=comp_name, name=f"EXP-{args.EXP}-{proj_name}", config=args, group=proj_name) # build_wandb(wandb_json_path, kaggle_env, dir, project, name, config, group)
+    print(f"wandb run id: {wandbrun.id}")
+
 
 all_fragments = sorted([f.name for f in train_path.iterdir()])
 print("All fragments:", all_fragments)
@@ -93,7 +104,7 @@ if args.TRAIN_RUN:
     print("Num batches:", len(train_loader))
 
 
-# # Play ground
+# Play ground
 # inputs, classes = next(iter(train_loader))
 # print("inputs.shape: ", inputs.shape)
 # print("classes.shape: ", classes.shape)
@@ -101,7 +112,7 @@ if args.TRAIN_RUN:
 # print("classes:\n\n", classes)
 # raise ValueError
 
-model = InkDetector().to(args.DEVICE)
+model = InkDetector().to(DEVICE)
 
 
 if __name__ == '__main__':
@@ -120,8 +131,8 @@ if __name__ == '__main__':
             if i >= args.TRAINING_STEPS:
                 break
             optimizer.zero_grad()
-            outputs = model(subvolumes.to(args.DEVICE))
-            loss = criterion(outputs, inklabels.to(args.DEVICE))
+            outputs = model(subvolumes.to(DEVICE))
+            loss = criterion(outputs, inklabels.to(DEVICE))
             loss.backward()
             optimizer.step()
             scheduler.step()
@@ -131,8 +142,13 @@ if __name__ == '__main__':
             running_accuracy += accuracy.item()
             running_loss += loss.item()
             denom += 1
-            pbar.set_postfix({"Loss": running_loss / denom, "Accuracy": running_accuracy / denom, "Fbeta@0.5": running_fbeta / denom})
+            metric_dict = {"Loss": running_loss / denom, "Accuracy": running_accuracy / denom, "Fbeta@0.5": running_fbeta / denom}
+            pbar.set_postfix(metric_dict)
             if (i + 1) % 500 == 0:
+                if args.WANDB:
+                    wandb.log(metric_dict)
+                
+                # initialize metrics for next "epoch"
                 running_loss = 0.
                 running_accuracy = 0.
                 running_fbeta = 0.
@@ -174,7 +190,7 @@ if __name__ == '__main__':
 
             with torch.no_grad():
                 for i, (subvolumes, _) in enumerate(tqdm(eval_loader)):
-                    output = model(subvolumes.to(args.DEVICE)).view(-1).sigmoid().cpu().numpy()
+                    output = model(subvolumes.to(DEVICE)).view(-1).sigmoid().cpu().numpy()
                     outputs.append(output)
 
                     if type(args.EXP) == str:
@@ -208,3 +224,11 @@ if __name__ == '__main__':
             submission["Predicted"].append(rle(pred_images[fragment_id]))
 
         pd.DataFrame.from_dict(submission).to_csv(out_path / "submission.csv", index=False)
+
+    
+
+    if not KAGGLE_ENV:
+        if args.WANDB:
+            send_line_notification(f"Training of {proj_name} has been done. See {wandbrun.url}", json_path / "line.json")
+        else:
+            send_line_notification(f"Training of {proj_name} has been done.", json_path / "line.json")

@@ -2,6 +2,8 @@
 ################ utils.py ################
 ##########################################
 import numpy as np
+import requests
+import json
 
 def rle(output):
     output = output.flatten()
@@ -13,3 +15,14 @@ def rle(output):
     ends_ix = np.where(ends)[0] + 2
     lengths = ends_ix - starts_ix
     return " ".join(map(str, sum(zip(starts_ix, lengths), ())))
+
+
+def send_line_notification(message, line_json_path):
+    f = open(line_json_path, "r")
+    json_data = json.load(f)
+    line_token = json_data["kagglePush"]
+    endpoint = 'https://notify-api.line.me/api/notify'
+    message = "\n{}".format(message)
+    payload = {'message': message}
+    headers = {'Authorization': 'Bearer {}'.format(line_token)}
+    requests.post(endpoint, data=payload, headers=headers)
