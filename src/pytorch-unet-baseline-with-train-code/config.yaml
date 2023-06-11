@@ -1,0 +1,8 @@
+EXP: 4 # 3 "debug"
+TRAINING_STEPS: 180000
+LEARNING_RATE: 1.0e-3
+TRAIN_RUN: true # To avoid re-running when saving the notebook
+BATCH_SIZE: 32
+VOXEL_SHAPE:
+  [48, 64, 64]
+WANDB: true
