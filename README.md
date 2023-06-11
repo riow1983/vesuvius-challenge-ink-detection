@@ -1,8 +1,9 @@
 # EXP
-- 1.0: Standard run
+- 1: Standard run
+- 2: Voxel shape
 
 # ToDos
-- Distribution omparison between ink parts and non-ink parts
+- Distribution comparison between ink parts and non-ink parts
 - Will sub sampling tiffs improve score?
 - Object function weight on precision using torch pos_weight https://discuss.pytorch.org/t/weights-in-bcewithlogitsloss/27452/4
 - CV strategy
