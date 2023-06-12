@@ -208,7 +208,8 @@ if __name__ == '__main__':
             pred_image = np.zeros(image_shape, dtype=np.uint8)
             outputs = np.concatenate(outputs)
             for (y, x, _), prob in zip(eval_dset.pixels[:outputs.shape[0]], outputs):
-                pred_image[y ,x] = prob > 0.4
+                # pred_image[y ,x] = prob > 0.4
+                pred_image[y ,x] = prob
             pred_images.append(pred_image)
             
             eval_dset.pixels = None

@@ -1,4 +1,4 @@
-EXP: 6 # 3 "debug"
+EXP: 7 # 3 "debug"
 TRAINING_STEPS: 60000
 LEARNING_RATE: 1.0e-3
 TRAIN_RUN: true # To avoid re-running when saving the notebook
