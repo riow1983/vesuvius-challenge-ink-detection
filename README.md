@@ -17,3 +17,13 @@
 ```
 
 100%|██████████| 60000/60000 [50:15<00:00, 19.90it/s, Loss=0.164, Accuracy=0.854, Fbeta@0.5=0.481]   
+
+
+# Discussions
+- [For those guys who scored > 0.2](https://www.kaggle.com/competitions/vesuvius-challenge-ink-detection/discussion/413949)
+
+# Notebooks
+- [Pytorch UNet baseline (with train code)](https://www.kaggle.com/code/yururoi/pytorch-unet-baseline-with-train-code/notebook)
+
+# Documentations
+- [Segmentation Models](https://smp.readthedocs.io/en/latest/index.html)
