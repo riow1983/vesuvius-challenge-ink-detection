@@ -46,6 +46,7 @@ class CFG(object):
         self.BATCH_SIZE = args["BATCH_SIZE"]
         self.VOXEL_SHAPE = (args["VOXEL_SHAPE"][0], args["VOXEL_SHAPE"][1], args["VOXEL_SHAPE"][2])
         self.WANDB = args["WANDB"]
+        self.THRES = args["THRES"]
 
         if type(self.EXP) == str:
             self.TRAINING_STEPS = 1500
@@ -221,7 +222,7 @@ if __name__ == '__main__':
         submission = defaultdict(list)
         for fragment_id, fragment_name in enumerate(test_fragments):
             submission["Id"].append(fragment_name.name)
-            submission["Predicted"].append(rle(pred_images[fragment_id]))
+            submission["Predicted"].append(rle(pred_images[fragment_id], args.THRES))
 
         pd.DataFrame.from_dict(submission).to_csv(out_path / "submission.csv", index=False)
 

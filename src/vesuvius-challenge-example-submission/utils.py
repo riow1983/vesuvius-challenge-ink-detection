@@ -5,9 +5,9 @@ import numpy as np
 import requests
 import json
 
-def rle(output):
+def rle(output, thres):
     output = output.flatten()
-    flat_img = np.where(output > 0.4, 1, 0).astype(np.uint8)
+    flat_img = np.where(output > thres, 1, 0).astype(np.uint8)
     print("flat_img.shape: ", flat_img.shape)
     starts = np.array((flat_img[:-1] == 0) & (flat_img[1:] == 1))
     ends = np.array((flat_img[:-1] == 1) & (flat_img[1:] == 0))
