@@ -48,7 +48,7 @@ class CFG:
     lr = 1e-4 / warmup_factor
 
     # ============== fold =============
-    valid_id = 1
+    valid_id = 3
 
     # objective_cv = 'binary'  # 'binary', 'multiclass', 'regression'
     metric_direction = 'maximize'  # maximize, 'minimize'
