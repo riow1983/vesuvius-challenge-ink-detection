@@ -16,6 +16,8 @@ from warmup_scheduler import GradualWarmupScheduler
 from torch.cuda.amp import autocast, GradScaler
 from sklearn.metrics import fbeta_score
 from tqdm.auto import tqdm
+import requests
+import json
 
 from config import CFG
 
@@ -215,3 +217,15 @@ def calc_cv(mask_gt, mask_pred, logger):
     best_dice, best_th = calc_fbeta(mask_gt, mask_pred, logger)
 
     return best_dice, best_th
+
+
+
+def send_line_notification(message, line_json_path):
+    f = open(line_json_path, "r")
+    json_data = json.load(f)
+    line_token = json_data["kagglePush"]
+    endpoint = 'https://notify-api.line.me/api/notify'
+    message = "\n{}".format(message)
+    payload = {'message': message}
+    headers = {'Authorization': 'Bearer {}'.format(line_token)}
+    requests.post(endpoint, data=payload, headers=headers)

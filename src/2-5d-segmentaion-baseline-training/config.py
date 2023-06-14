@@ -17,7 +17,8 @@ class CFG:
     # comp_dataset_path = f'{comp_dir_path}datasets/{comp_folder_name}/'
     comp_dataset_path = f'{comp_dir_path}{comp_folder_name}/'
     
-    exp_name = f"EXP-1-{proj_name}"
+    # exp_name = f"exp-2-{proj_name}"
+    exp_name = "debug"
 
     # ============== pred target =============
     target_size = 1
@@ -47,7 +48,7 @@ class CFG:
     lr = 1e-4 / warmup_factor
 
     # ============== fold =============
-    valid_id = 3
+    valid_id = 1
 
     # objective_cv = 'binary'  # 'binary', 'multiclass', 'regression'
     metric_direction = 'maximize'  # maximize, 'minimize'
@@ -75,8 +76,7 @@ class CFG:
     submission_dir = outputs_path + 'submissions/'
     submission_path = submission_dir + f'submission_{exp_name}.csv'
 
-    model_dir = outputs_path + \
-        f'{comp_name}-models/'
+    model_dir = outputs_path + f'{comp_name}-models/'
 
     figures_dir = outputs_path + 'figures/'
 
@@ -117,3 +117,6 @@ class CFG:
         ),
         ToTensorV2(transpose_mask=True),
     ]
+    
+    wandb_json_path = "/content/drive/MyDrive/colab_notebooks/kaggle/wandb.json"
+    line_json_path = "/content/drive/MyDrive/colab_notebooks/kaggle/line.json"

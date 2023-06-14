@@ -5,7 +5,7 @@
 import os
 os.system("pip install segmentation_models_pytorch")
 os.system("pip install warmup_scheduler")
-
+os.system("pip install wandb")
 
 from sklearn.metrics import roc_auc_score, accuracy_score, f1_score, log_loss
 import pickle
@@ -40,6 +40,7 @@ from torch.utils.data import DataLoader, Dataset
 import albumentations as A
 from albumentations.pytorch import ToTensorV2
 from albumentations import ImageOnlyTransform
+import wandb
 
 from utils import (
     init_logger, 
@@ -49,18 +50,34 @@ from utils import (
     train_fn,
     valid_fn,
     calc_fbeta,
-    calc_cv
+    calc_cv,
+    send_line_notification
 )
 from dataset import get_train_valid_dataset, get_transforms, CustomDataset
 from model import build_model
 from loss import criterion
 from config import CFG
+from _wandb import build_wandb
+
+if CFG.exp_name == "debug":
+    CFG.epochs = 2
 
 cfg_init(CFG)
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 Logger = init_logger(log_file=CFG.log_path)
 Logger.info('\n\n-------- exp_info -----------------')
 # Logger.info(datetime.datetime.now().strftime('%Y年%m月%d日 %H:%M:%S'))
+
+
+wandbrun = build_wandb(wandb_json_path=CFG.wandb_json_path, 
+                       kaggle_env=False, 
+                       dir=out_path, 
+                       project=comp_name, 
+                       name=CFG.exp_name, 
+                       config=CFG, 
+                       group=proj_name)
+print(f"wandb run id: {wandbrun.id}")
+send_line_notification(f"Training of {proj_name} has been started. \nSee {wandbrun.url}", line_json_path)
 
 
 train_images, train_masks, valid_images, valid_masks, valid_xyxys = get_train_valid_dataset()
@@ -136,6 +153,9 @@ if __name__ == '__main__':
         Logger.info(
             f'Epoch {epoch+1} - avgScore: {score:.4f}')
 
+        metric_dict = {"Epoch": epoch+1:, "avg_train_loss": avg_loss, "avg_val_loss": avg_val_loss, "avgScore": score, "time": elapsed}
+        wandb.log(metric_dict)
+
         if CFG.metric_direction == 'minimize':
             update_best = score < best_score
         elif CFG.metric_direction == 'maximize':
@@ -159,3 +179,6 @@ if __name__ == '__main__':
     mask_pred = check_point['preds']
     best_dice, best_th  = calc_fbeta(valid_mask_gt, mask_pred, Logger)
     print(f"best_dice: {best_dice}; best_th: {best_th}")
+
+
+    send_line_notification(f"Training of {proj_name} has been done. \nbest_dice: {best_dice}; best_th: {best_th}. \nSee {wandbrun.url}", line_json_path)
