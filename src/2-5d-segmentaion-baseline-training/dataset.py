@@ -2,7 +2,7 @@
 ################ dataset.py #############
 #########################################
 
-import tqdm
+from tqdm.auto import tqdm
 import cv2
 import numpy as np
 from torch.utils.data import DataLoader, Dataset
@@ -11,7 +11,8 @@ import os
 import albumentations as A
 from albumentations.pytorch import ToTensorV2
 from albumentations import ImageOnlyTransform
-from main import CFG
+
+from config import CFG
 
 
 def read_image_mask(fragment_id):

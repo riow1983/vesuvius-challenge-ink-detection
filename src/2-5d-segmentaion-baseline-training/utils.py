@@ -15,7 +15,9 @@ from torch.optim.lr_scheduler import CosineAnnealingWarmRestarts, CosineAnnealin
 from warmup_scheduler import GradualWarmupScheduler
 from torch.cuda.amp import autocast, GradScaler
 from sklearn.metrics import fbeta_score
+from tqdm.auto import tqdm
 
+from config import CFG
 
 
 class AverageMeter(object):
@@ -189,7 +191,7 @@ def fbeta_numpy(targets, preds, beta=0.5, smooth=1e-5):
 
     return dice
 
-def calc_fbeta(mask, mask_pred):
+def calc_fbeta(mask, mask_pred, logger):
     mask = mask.astype(int).flatten()
     mask_pred = mask_pred.flatten()
 
@@ -205,11 +207,11 @@ def calc_fbeta(mask, mask_pred):
             best_dice = dice
             best_th = th
     
-    Logger.info(f'best_th: {best_th}, fbeta: {best_dice}')
+    logger.info(f'best_th: {best_th}, fbeta: {best_dice}')
     return best_dice, best_th
 
 
-def calc_cv(mask_gt, mask_pred):
-    best_dice, best_th = calc_fbeta(mask_gt, mask_pred)
+def calc_cv(mask_gt, mask_pred, logger):
+    best_dice, best_th = calc_fbeta(mask_gt, mask_pred, logger)
 
     return best_dice, best_th

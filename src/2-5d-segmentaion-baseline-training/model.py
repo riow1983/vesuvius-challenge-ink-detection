@@ -6,6 +6,8 @@ import os
 os.system("pip install segmentation_models_pytorch")
 
 import segmentation_models_pytorch as smp
+import torch
+import torch.nn as nn
 
 class CustomModel(nn.Module):
     def __init__(self, cfg, weight=None):
