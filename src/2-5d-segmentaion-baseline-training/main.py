@@ -59,6 +59,9 @@ from loss import criterion
 from config import CFG
 from _wandb import build_wandb
 
+import ssl
+ssl._create_default_https_context = ssl._create_unverified_context
+
 if CFG.exp_name == "debug":
     CFG.epochs = 2
 
@@ -68,17 +71,17 @@ Logger = init_logger(log_file=CFG.log_path)
 Logger.info('\n\n-------- exp_info -----------------')
 # Logger.info(datetime.datetime.now().strftime('%Y年%m月%d日 %H:%M:%S'))
 
-
+#### W&B
 wandbrun = build_wandb(wandb_json_path=CFG.wandb_json_path, 
                        kaggle_env=False, 
-                       dir=out_path, 
-                       project=comp_name, 
+                       dir=CFG.outputs_path, 
+                       project=CFG.comp_name, 
                        name=CFG.exp_name, 
                        config=CFG, 
-                       group=proj_name)
+                       group=CFG.proj_name)
 print(f"wandb run id: {wandbrun.id}")
-send_line_notification(f"Training of {proj_name} has been started. \nSee {wandbrun.url}", line_json_path)
-
+send_line_notification(f"Training of {CFG.proj_name} has been started. \nSee {wandbrun.url}", CFG.line_json_path)
+#### W&BW&B
 
 train_images, train_masks, valid_images, valid_masks, valid_xyxys = get_train_valid_dataset()
 valid_xyxys = np.stack(valid_xyxys)
@@ -152,9 +155,11 @@ if __name__ == '__main__':
         # Logger.info(f'Epoch {epoch+1} - avgScore: {avg_score:.4f}')
         Logger.info(
             f'Epoch {epoch+1} - avgScore: {score:.4f}')
-
-        metric_dict = {"Epoch": epoch+1:, "avg_train_loss": avg_loss, "avg_val_loss": avg_val_loss, "avgScore": score, "time": elapsed}
+        
+        #### W&B
+        metric_dict = {"Epoch": epoch+1, "avg_train_loss": avg_loss, "avg_val_loss": avg_val_loss, "avgScore": score, "time": elapsed}
         wandb.log(metric_dict)
+        #### W&BW&B
 
         if CFG.metric_direction == 'minimize':
             update_best = score < best_score
@@ -180,5 +185,6 @@ if __name__ == '__main__':
     best_dice, best_th  = calc_fbeta(valid_mask_gt, mask_pred, Logger)
     print(f"best_dice: {best_dice}; best_th: {best_th}")
 
-
-    send_line_notification(f"Training of {proj_name} has been done. \nbest_dice: {best_dice}; best_th: {best_th}. \nSee {wandbrun.url}", line_json_path)
+    #### W&B
+    send_line_notification(f"Training of {CFG.proj_name} has been done. \nbest_dice: {best_dice}; best_th: {best_th}. \nSee {wandbrun.url}", CFG.line_json_path)
+    #### W&BW&B

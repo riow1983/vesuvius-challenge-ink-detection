@@ -17,16 +17,16 @@ class CFG:
     # comp_dataset_path = f'{comp_dir_path}datasets/{comp_folder_name}/'
     comp_dataset_path = f'{comp_dir_path}{comp_folder_name}/'
     
-    # exp_name = f"exp-2-{proj_name}"
-    exp_name = "debug"
+    exp_name = f"exp-2-{proj_name}"
+    # exp_name = "debug"
 
     # ============== pred target =============
     target_size = 1
 
     # ============== model cfg =============
     model_name = 'Unet'
-    backbone = 'efficientnet-b0'
-    # backbone = 'se_resnext50_32x4d'
+    # backbone = 'efficientnet-b0'
+    backbone = 'se_resnext50_32x4d'
 
     in_chans = 6 # 65
     # ============== training cfg =============
@@ -40,7 +40,7 @@ class CFG:
 
     scheduler = 'GradualWarmupSchedulerV2'
     # scheduler = 'CosineAnnealingLR'
-    epochs = 15 # 30
+    epochs = 45 # 30
 
     # adamW warmupあり
     warmup_factor = 10
