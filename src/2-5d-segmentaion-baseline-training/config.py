@@ -98,8 +98,8 @@ class CFG:
         A.GridDistortion(num_steps=5, distort_limit=0.3, p=0.5),
         A.CoarseDropout(max_holes=1, max_width=int(size * 0.3), max_height=int(size * 0.3), mask_fill_value=0, p=0.5),
         A.Normalize(
-            mean= [0] * in_chanss,
-            std= [1] * in_chanss
+            mean= [0] * in_chans,
+            std= [1] * in_chans
         ),
         ToTensorV2(transpose_mask=True)
     ]
