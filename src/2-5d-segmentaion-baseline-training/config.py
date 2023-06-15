@@ -17,7 +17,7 @@ class CFG:
     # comp_dataset_path = f'{comp_dir_path}datasets/{comp_folder_name}/'
     comp_dataset_path = f'{comp_dir_path}{comp_folder_name}/'
     
-    exp_name = f"exp-2-{proj_name}"
+    exp_name = f"exp-3-{proj_name}"
     # exp_name = "debug"
 
     # ============== pred target =============
@@ -27,11 +27,13 @@ class CFG:
     model_name = 'Unet'
     # backbone = 'efficientnet-b0'
     backbone = 'se_resnext50_32x4d'
+    # backbone = 'resnet10t'
+    # backbone = 'resnet34d'
 
     in_chans = 6 # 65
     # ============== training cfg =============
-    size = 224
-    tile_size = 224
+    size = 320
+    tile_size = 320
     stride = tile_size // 2
 
     train_batch_size = 16 # 32
@@ -40,7 +42,7 @@ class CFG:
 
     scheduler = 'GradualWarmupSchedulerV2'
     # scheduler = 'CosineAnnealingLR'
-    epochs = 45 # 30
+    epochs = 15 # 30
 
     # adamW warmupあり
     warmup_factor = 10
@@ -48,7 +50,7 @@ class CFG:
     lr = 1e-4 / warmup_factor
 
     # ============== fold =============
-    valid_id = 3
+    valid_id = 1
 
     # objective_cv = 'binary'  # 'binary', 'multiclass', 'regression'
     metric_direction = 'maximize'  # maximize, 'minimize'
@@ -85,28 +87,21 @@ class CFG:
 
     # ============== augmentation =============
     train_aug_list = [
-        # A.RandomResizedCrop(
-        #     size, size, scale=(0.85, 1.0)),
         A.Resize(size, size),
         A.HorizontalFlip(p=0.5),
         A.VerticalFlip(p=0.5),
         A.RandomBrightnessContrast(p=0.75),
-        A.ShiftScaleRotate(p=0.75),
-        A.OneOf([
-                A.GaussNoise(var_limit=[10, 50]),
-                A.GaussianBlur(),
-                A.MotionBlur(),
-                ], p=0.4),
+        A.GaussNoise(var_limit=[10, 50]),
+        A.GaussianBlur(),
+        A.RandomGamma(p=0.5, gamma_limit=(50, 200)),
+        A.OneOf([A.OpticalDistortion(p=0.3), A.GridDistortion(p=0.3), A.ElasticTransform(p=0.1)], p=0.5),
         A.GridDistortion(num_steps=5, distort_limit=0.3, p=0.5),
-        A.CoarseDropout(max_holes=1, max_width=int(size * 0.3), max_height=int(size * 0.3), 
-                        mask_fill_value=0, p=0.5),
-        # A.Cutout(max_h_size=int(size * 0.6),
-        #          max_w_size=int(size * 0.6), num_holes=1, p=1.0),
+        A.CoarseDropout(max_holes=1, max_width=int(size * 0.3), max_height=int(size * 0.3), mask_fill_value=0, p=0.5),
         A.Normalize(
-            mean= [0] * in_chans,
-            std= [1] * in_chans
+            mean= [0] * in_chanss,
+            std= [1] * in_chanss
         ),
-        ToTensorV2(transpose_mask=True),
+        ToTensorV2(transpose_mask=True)
     ]
 
     valid_aug_list = [
