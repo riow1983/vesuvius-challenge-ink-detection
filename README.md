@@ -89,6 +89,14 @@ Epoch 45 - avgScore: 0.5515
 best_th: 0.5, fbeta: 0.5769704817882036
 ```
 
+# 反省点
+- foldごとの訓練は意外といい. チーム組んでやる上でも分担効率が良い.
+- foldごとに実験結果を比較できるようW&BのEXP名にfold数も入れるべきだった
+- W&Bは最初期の実行時から適用すべきだった (EXP1の結果だけW&Bに無いなどということが無いように)
+- 最終週だけ業務時間ほぼ全投入. それでようやく面白くなってきたが時間切れ. 
+- 火を付けるためにはコンペ参加初期にもあえて全投入週を作るべきかも.
+- 次期コンペもセグメンテーションコンペにするか?
+
 # W&B
 https://wandb.ai/riow1983/vesuvius-challenge-ink-detection/table?workspace=user-riow1983
 
@@ -105,9 +113,92 @@ https://wandb.ai/riow1983/vesuvius-challenge-ink-detection/table?workspace=user-
 - [Segmentation Models](https://smp.readthedocs.io/en/latest/index.html)
 
 # GitHub
+- [ink-ID](https://github.com/educelab/ink-id/tree/develop)
 - [Loss functions for image segmentation](https://github.com/JunMa11/SegLoss)
 
 # Snipets
+[Ensemble models w/ TTA on parallel processing]
+```python
+# Credit to https://www.kaggle.com/code/riow1983/2-5d-segmentaion-model-with-rotate-tta/notebook?scriptVersionId=133522169
+class CustomModel(nn.Module):
+    def __init__(self, cfg, weight=None):
+        super().__init__()
+        self.cfg = cfg
+
+        self.encoder = smp.Unet(
+            encoder_name=cfg.backbone, 
+            encoder_weights=weight,
+            in_channels=cfg.in_chans,
+            classes=cfg.target_size,
+            activation=None,
+        )
+
+    def forward(self, image):
+        output = self.encoder(image)
+        output = output.squeeze(-1)
+        return output
+
+def build_model(cfg, weight="imagenet"):
+    print('model_name', cfg.model_name)
+    print('backbone', cfg.backbone)
+
+    model = CustomModel(cfg, weight)
+    return model
+
+
+class EnsembleModel(nn.Module):
+    def __init__(self):
+        super().__init__()
+        self.model = nn.ModuleList()
+        for fold in [1, 2, 3]:
+            _model = build_model(CFG, weight=None)
+            model_path = f'/kaggle/input/{CFG.exp_name}/vesuvius-challenge-ink-detection-models/Unet_fold{fold}_best.pth'
+            state = torch.load(model_path)['model']
+            state = torch.load(model_path)['model']
+            _model.load_state_dict(state)
+            _model.eval()
+
+            self.model.append(_model)
+    
+    def forward(self,x):
+        output=[]
+        for m in self.model:
+            output.append(m(x))
+        output=torch.stack(output, dim=0).mean(0)
+        return output
+        
+model = EnsembleModel()
+model = nn.DataParallel(model, device_ids=[0, 1])
+model = model.cuda()
+
+
+def TTA(x:tc.Tensor, model:nn.Module):
+    #x.shape=(batch,c,h,w)
+    if CFG.TTA:
+        shape=x.shape
+        x=[x,*[tc.rot90(x,k=i,dims=(-2,-1)) for i in range(1,4)]]
+        x=tc.cat(x,dim=0)
+        x=model(x)
+        x=torch.sigmoid(x)
+        x=x.reshape(4,shape[0],*shape[2:])
+        x=[tc.rot90(x[i],k=-i,dims=(-2,-1)) for i in range(4)]
+        x=tc.stack(x,dim=0)
+        return x.mean(0)
+    else :
+        x=model(x)
+        x=torch.sigmoid(x)
+        return x
+
+
+# Under an inference iteration:
+    for step, (images) in tqdm(enumerate(test_loader), total=len(test_loader)):
+        images = images.cuda()
+        batch_size = images.size(0)
+
+        with torch.no_grad():
+            y_preds = TTA(images,model).cpu().numpy()
+```
+
 [Early stopping]
 ```python
 # Credit to: https://www.kaggle.com/code/yururoi/pytorch-unet-baseline-with-train-code?scriptVersionId=122620610&cellId=20
