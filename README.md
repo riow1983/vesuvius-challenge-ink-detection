@@ -99,16 +99,16 @@ best_th: 0.5, fbeta: 0.5769704817882036
 - 次期コンペもセグメンテーションコンペにするか?
 
 # Top solutions
-[1]
-[2]　https://www.kaggle.com/competitions/vesuvius-challenge-ink-detection/discussion/417255
-[3]
-[4]
-[5]
-[6] https://www.kaggle.com/competitions/vesuvius-challenge-ink-detection/discussion/417274
-[7]
-[8]
-[9]
-[10]
+[1]  
+[2]　https://www.kaggle.com/competitions/vesuvius-challenge-ink-detection/discussion/417255  
+[3]  
+[4]  
+[5]  
+[6] https://www.kaggle.com/competitions/vesuvius-challenge-ink-detection/discussion/417274  
+[7]  
+[8]  
+[9]  
+[10]  
 
 # W&B
 https://wandb.ai/riow1983/vesuvius-challenge-ink-detection/table?workspace=user-riow1983
