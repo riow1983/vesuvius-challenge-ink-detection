@@ -27,8 +27,8 @@ class CFG:
     model_name = 'Unet'
     # backbone = 'efficientnet-b0'
     # backbone = 'se_resnext50_32x4d'
-    backbone = 'resnet101'
-    # backbone = 'resnet34'
+    # backbone = 'resnet101'
+    backbone = 'resnet34'
 
     in_chans = 6 # 65
     # ============== training cfg =============
@@ -50,7 +50,7 @@ class CFG:
     lr = 1e-4 / warmup_factor
 
     # ============== fold =============
-    valid_id = 2
+    valid_id = 3
 
     # objective_cv = 'binary'  # 'binary', 'multiclass', 'regression'
     metric_direction = 'maximize'  # maximize, 'minimize'

@@ -1,16 +1,12 @@
 # Overview
 https://www.kaggle.com/competitions/vesuvius-challenge-ink-detection
 
-# EXP
-- 1: Standard run
-- 2: Voxel shape
 
-# ToDos
+# Ideas
 - Distribution comparison between ink parts and non-ink parts
 - Will sub sampling tiffs improve score?
 - Object function weight on precision using torch pos_weight https://discuss.pytorch.org/t/weights-in-bcewithlogitsloss/27452/4
 - CV strategy
-
 
 ```python
     #### RIOW
@@ -18,9 +14,6 @@ https://www.kaggle.com/competitions/vesuvius-challenge-ink-detection
     criterion = nn.BCEWithLogitsLoss(pos_weight=torch.tensor([.35], device=DEVICE))
     #### RIOWRIOW
 ```
-
-100%|██████████| 60000/60000 [50:15<00:00, 19.90it/s, Loss=0.164, Accuracy=0.854, Fbeta@0.5=0.481]   
-
 
 # CV Folds
 https://www.kaggle.com/code/yururoi/pytorch-unet-baseline-with-train-code?scriptVersionId=122620610&cellId=22
@@ -90,12 +83,32 @@ best_th: 0.5, fbeta: 0.5769704817882036
 ```
 
 # 反省点
+- 2.5d segmentationというのが流行っているらしい
+- "データ分析"ができなかった(やる気が起きなかった)
+- [こういう発見](https://www.kaggle.com/competitions/vesuvius-challenge-ink-detection/discussion/417071)をしてみたい
+- 次回からはせめて何らかの"分布"は自分で見るようにしたい
+- [こういう日記](https://ai-ml-dl.hatenablog.com/entry/2020/06/30/095516)書こう; せめて公開ノートブックのキュレーション記録くらいは.
+- 序盤に見つけていた公開ノートブックを終盤に"再発見"するなどの愚は記録を付けて見返す習慣があれば防げた
+- 3 folds以外考えられなかった
 - foldごとの訓練は意外といい. チーム組んでやる上でも分担効率が良い.
-- foldごとに実験結果を比較できるようW&BのEXP名にfold数も入れるべきだった
+- foldごとに実験結果を比較できるようW&BのRUN名にfold数も入れるべきだった
 - W&Bは最初期の実行時から適用すべきだった (EXP1の結果だけW&Bに無いなどということが無いように)
 - 最終週だけ業務時間ほぼ全投入. それでようやく面白くなってきたが時間切れ. 
 - 火を付けるためにはコンペ参加初期にもあえて全投入週を作るべきかも.
+- セグメンテーションは`segmentation_models_pytorch`のお陰でモデル実装は簡便だが, データオーグメンテーションは`albumentations`に習熟する必要があり難しい
 - 次期コンペもセグメンテーションコンペにするか?
+
+# Top solutions
+[1]
+[2]　https://www.kaggle.com/competitions/vesuvius-challenge-ink-detection/discussion/417255
+[3]
+[4]
+[5]
+[6] https://www.kaggle.com/competitions/vesuvius-challenge-ink-detection/discussion/417274
+[7]
+[8]
+[9]
+[10]
 
 # W&B
 https://wandb.ai/riow1983/vesuvius-challenge-ink-detection/table?workspace=user-riow1983
@@ -111,6 +124,7 @@ https://wandb.ai/riow1983/vesuvius-challenge-ink-detection/table?workspace=user-
 
 # Documentations
 - [Segmentation Models](https://smp.readthedocs.io/en/latest/index.html)
+- [Segmentation Models / Encoders](https://segmentation-modelspytorch.readthedocs.io/en/latest/#encoders)
 
 # GitHub
 - [ink-ID](https://github.com/educelab/ink-id/tree/develop)
