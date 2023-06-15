@@ -1,3 +1,6 @@
+# Overview
+https://www.kaggle.com/competitions/vesuvius-challenge-ink-detection
+
 # EXP
 - 1: Standard run
 - 2: Voxel shape
@@ -20,9 +23,8 @@
 
 
 # CV Folds
-https://www.kaggle.com/code/yururoi/pytorch-unet-baseline-with-train-code?cellIds=22&kernelSessionId=122620610
+https://www.kaggle.com/code/yururoi/pytorch-unet-baseline-with-train-code?scriptVersionId=122620610&cellId=22
 ```python
-# Credit to 
 data_set = []
 data_set.append(
     {
@@ -92,10 +94,56 @@ https://wandb.ai/riow1983/vesuvius-challenge-ink-detection/table?workspace=user-
 
 # Discussions
 - [For those guys who scored > 0.2](https://www.kaggle.com/competitions/vesuvius-challenge-ink-detection/discussion/413949)
+- [Unannotated Signal in Fragment ID 1???](https://www.kaggle.com/competitions/vesuvius-challenge-ink-detection/discussion/417071)
 
 # Notebooks
+- [Vesuvius Challenge: Ink Detection tutorial](https://www.kaggle.com/code/jpposma/vesuvius-challenge-ink-detection-tutorial)
 - [Pytorch UNet baseline (with train code)](https://www.kaggle.com/code/yururoi/pytorch-unet-baseline-with-train-code/notebook)
 - [[0.11] Simplest Possible Solution: submit testmask](https://www.kaggle.com/code/lucasvw/0-11-simplest-possible-solution-submit-testmask)
 
 # Documentations
 - [Segmentation Models](https://smp.readthedocs.io/en/latest/index.html)
+
+# GitHub
+- [Loss functions for image segmentation](https://github.com/JunMa11/SegLoss)
+
+# Snipets
+[Early stopping]
+```python
+# Credit to: https://www.kaggle.com/code/yururoi/pytorch-unet-baseline-with-train-code?scriptVersionId=122620610&cellId=20
+class EarlyStopping:
+    def __init__(self, patience=7, verbose=False, delta=0, fold=""):
+        self.patience = patience
+        self.verbose = verbose
+        self.counter = 0
+        self.best_score = None
+        self.early_stop = False
+        self.val_loss_min = np.Inf
+        self.delta = delta
+
+    def __call__(self, val_loss, model):
+
+        score = -val_loss
+
+        if self.best_score is None:
+            self.best_score = score
+            self.save_checkpoint(val_loss, model)
+        elif score < self.best_score + self.delta:
+            self.counter += 1
+            logger.info(f"EarlyStopping counter: {self.counter} out of {self.patience}")
+            if self.counter >= self.patience:
+                self.early_stop = True
+        else:
+            self.best_score = score
+            self.save_checkpoint(val_loss, model)
+            self.counter = 0
+
+    def save_checkpoint(self, val_loss, model):
+        """Saves model when validation loss decrease."""
+        if self.verbose:
+            logger.info(
+                f"Validation loss decreased ({self.val_loss_min:.6f} --> {val_loss:.6f}).  Saving model ..."
+            )
+        torch.save(model.state_dict(), CP_DIR / f"{HOST}_{NB}_checkpoint_{fold}.pt")
+        self.val_loss_min = val_loss
+```
