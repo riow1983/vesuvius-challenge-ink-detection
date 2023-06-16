@@ -90,6 +90,7 @@ best_th: 0.5, fbeta: 0.5769704817882036
 - [こういう日記](https://ai-ml-dl.hatenablog.com/entry/2020/06/30/095516)書こう; せめて公開ノートブックのキュレーション記録くらいは.
 - 序盤に見つけていた公開ノートブックを終盤に"再発見"するなどの愚は記録を付けて見返す習慣があれば防げた
 - 3 folds以外考えられなかった
+- 画像を分割してfold数を増やす方法くらい思いつけと１ヶ月前の自分に言いたい
 - foldごとの訓練は意外といい. チーム組んでやる上でも分担効率が良い.
 - foldごとに実験結果を比較できるようW&BのRUN名にfold数も入れるべきだった
 - W&Bは最初期の実行時から適用すべきだった (EXP1の結果だけW&Bに無いなどということが無いように)
@@ -97,10 +98,13 @@ best_th: 0.5, fbeta: 0.5769704817882036
 - 火を付けるためにはコンペ参加初期にもあえて全投入週を作るべきかも.
 - セグメンテーションは`segmentation_models_pytorch`のお陰でモデル実装は簡便だが, データオーグメンテーションは`albumentations`に習熟する必要があり難しい
 - 次期コンペもセグメンテーションコンペにするか?
+- 特に何も思いつかなくても脳死状態でもアンサンブルはできる; 特にハイパラ変更すらせずモデルの種類を変更するだけのアンサンブルでも可
+- [37th solution](https://www.kaggle.com/competitions/vesuvius-challenge-ink-detection/discussion/417258)に触発されて[late submit](https://www.kaggle.com/code/riow1983/2-5d-segmentaion-model-with-rotate-tta?scriptVersionId=133643142)したら少しスコア上がった(0.36 -> 0.45)ので, ちょっとした変更をするだけで効果はある
+- 1stを含めtop solutionsの多くが[2.5 starter code](https://www.kaggle.com/code/tanakar/2-5d-segmentaion-baseline-training)を使っており, 自分の公開ノートブックを見る目は正しかったと判明; なおこのノートブックには[ここ](https://github.com/riow1983/vesuvius-challenge-ink-detection/issues/1#issue-1699376178)に記載しているようにMay 8の時点で認知していたが、実際に触り始めたのはコンペ最終週からだったというのが悔やまれる
 
 # Top solutions
-[1]  
-[2]　https://www.kaggle.com/competitions/vesuvius-challenge-ink-detection/discussion/417255  
+[1] https://www.kaggle.com/competitions/vesuvius-challenge-ink-detection/discussion/417496  
+[2] https://www.kaggle.com/competitions/vesuvius-challenge-ink-detection/discussion/417255  
 [3]  
 [4]  
 [5]  
@@ -109,6 +113,14 @@ best_th: 0.5, fbeta: 0.5769704817882036
 [8]  
 [9]  
 [10]  
+
+# Q&A
+- テストデータのfragment数は?: 2
+```
+# https://www.kaggle.com/competitions/vesuvius-challenge-ink-detection/data
+You can expect two fragments in the hidden test set, which together are roughly the same size as a single training fragment. The sample slices available to download in the test folders are simply copied from training fragment one, but when you submit your notebook they will be substituted with the real test data.
+```
+- `segmentation_models_pytorch`で使われるエンコーダはpre-trainedなのか?:
 
 # W&B
 https://wandb.ai/riow1983/vesuvius-challenge-ink-detection/table?workspace=user-riow1983
