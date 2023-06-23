@@ -105,22 +105,23 @@ best_th: 0.5, fbeta: 0.5769704817882036
 # Top solutions
 [1] https://www.kaggle.com/competitions/vesuvius-challenge-ink-detection/discussion/417496  
 [2] https://www.kaggle.com/competitions/vesuvius-challenge-ink-detection/discussion/417255  
-[3]  
-[4]  
-[5]  
+[3] https://www.kaggle.com/competitions/vesuvius-challenge-ink-detection/discussion/417536  
+[4] https://www.kaggle.com/competitions/vesuvius-challenge-ink-detection/discussion/417779  
+[5] https://www.kaggle.com/competitions/vesuvius-challenge-ink-detection/discussion/417642  
 [6] https://www.kaggle.com/competitions/vesuvius-challenge-ink-detection/discussion/417274  
-[7]  
-[8]  
-[9]  
-[10]  
+[7] https://www.kaggle.com/competitions/vesuvius-challenge-ink-detection/discussion/417430  
+[8] https://www.kaggle.com/competitions/vesuvius-challenge-ink-detection/discussion/417383  
+[9] https://www.kaggle.com/competitions/vesuvius-challenge-ink-detection/discussion/417361  
+[10] https://www.kaggle.com/competitions/vesuvius-challenge-ink-detection/discussion/417363  
+[11] https://www.kaggle.com/competitions/vesuvius-challenge-ink-detection/discussion/417281  
 
 # Q&A
-- テストデータのfragment数は?: 2
+- Q)テストデータのfragment数は?: A)2つ
 ```
 # https://www.kaggle.com/competitions/vesuvius-challenge-ink-detection/data
 You can expect two fragments in the hidden test set, which together are roughly the same size as a single training fragment. The sample slices available to download in the test folders are simply copied from training fragment one, but when you submit your notebook they will be substituted with the real test data.
 ```
-- `segmentation_models_pytorch`で使われるエンコーダはpre-trainedなのか?:
+- Q)`segmentation_models_pytorch`で使われるエンコーダはpre-trainedなのか?: A)引数`encoder_weights`に`imagenet`を渡すとpre-trainedになるが, `None`を渡すとrandom initialized (no pre-trained)となる https://segmentation-modelspytorch.readthedocs.io/en/latest/#segmentation_models_pytorch.Unet なお上位解法ではどちらも採用されていた模様
 
 # W&B
 https://wandb.ai/riow1983/vesuvius-challenge-ink-detection/table?workspace=user-riow1983
@@ -141,6 +142,10 @@ https://wandb.ai/riow1983/vesuvius-challenge-ink-detection/table?workspace=user-
 # GitHub
 - [ink-ID](https://github.com/educelab/ink-id/tree/develop)
 - [Loss functions for image segmentation](https://github.com/JunMa11/SegLoss)
+- [SegFormer: Simple and Efficient Design for Semantic Segmentation with Transformers](https://github.com/NVlabs/SegFormer)
+
+# Papers
+- [SegFormer: Simple and Efficient Design for Semantic Segmentation with Transformers](https://arxiv.org/pdf/2105.15203.pdf)
 
 # Snipets
 [Ensemble models w/ TTA on parallel processing]
