@@ -117,10 +117,8 @@ best_th: 0.5, fbeta: 0.5769704817882036
 
 # Q&A
 - Q)テストデータのfragment数は?: A)2つ
-```
-# https://www.kaggle.com/competitions/vesuvius-challenge-ink-detection/data
-You can expect two fragments in the hidden test set, which together are roughly the same size as a single training fragment. The sample slices available to download in the test folders are simply copied from training fragment one, but when you submit your notebook they will be substituted with the real test data.
-```
+> You can expect two fragments in the hidden test set, which together are roughly the same size as a single training fragment. The sample slices available to download in the test folders are simply copied from training fragment one, but when you submit your notebook they will be substituted with the real test data.
+https://www.kaggle.com/competitions/vesuvius-challenge-ink-detection/data
 - Q)`segmentation_models_pytorch`で使われるエンコーダはpre-trainedなのか?: A)引数`encoder_weights`に`imagenet`を渡すとpre-trainedになるが, `None`を渡すとrandom initialized (no pre-trained)となる https://segmentation-modelspytorch.readthedocs.io/en/latest/#segmentation_models_pytorch.Unet なお上位解法ではどちらも採用されていた模様
 
 # W&B
