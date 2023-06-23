@@ -146,6 +146,7 @@ https://wandb.ai/riow1983/vesuvius-challenge-ink-detection/table?workspace=user-
 
 # Papers
 - [SegFormer: Simple and Efficient Design for Semantic Segmentation with Transformers](https://arxiv.org/pdf/2105.15203.pdf)
+- [Tracking ink composition on Herculaneum papyrus scrolls: quantification and speciation of lead by X-ray based techniques and Monte Carlo simulations](https://www.nature.com/articles/srep20763)
 
 # Snipets
 [Ensemble models w/ TTA on parallel processing]
