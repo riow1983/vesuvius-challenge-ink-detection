@@ -6,14 +6,11 @@ https://www.kaggle.com/competitions/vesuvius-challenge-ink-detection
 - Distribution comparison between ink parts and non-ink parts
 - Will sub sampling tiffs improve score?
 - Object function weight on precision using torch pos_weight https://discuss.pytorch.org/t/weights-in-bcewithlogitsloss/27452/4
-- CV strategy
-
 ```python
-    #### RIOW
     # criterion = nn.BCEWithLogitsLoss()
     criterion = nn.BCEWithLogitsLoss(pos_weight=torch.tensor([.35], device=DEVICE))
-    #### RIOWRIOW
 ```
+- CV strategy
 
 # CV Folds
 https://www.kaggle.com/code/yururoi/pytorch-unet-baseline-with-train-code?scriptVersionId=122620610&cellId=22
