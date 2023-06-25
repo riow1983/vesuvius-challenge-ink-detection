@@ -10,7 +10,6 @@ https://www.kaggle.com/competitions/vesuvius-challenge-ink-detection
     # criterion = nn.BCEWithLogitsLoss()
     criterion = nn.BCEWithLogitsLoss(pos_weight=torch.tensor([.35], device=DEVICE))
 ```
-- CV strategy
 
 # CV Folds
 https://www.kaggle.com/code/yururoi/pytorch-unet-baseline-with-train-code?scriptVersionId=122620610&cellId=22
