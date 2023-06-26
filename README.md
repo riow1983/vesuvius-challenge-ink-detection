@@ -1,6 +1,8 @@
 # Overview
 https://www.kaggle.com/competitions/vesuvius-challenge-ink-detection
 
+# Results
+552nd / 1249 
 
 # Ideas
 - Distribution comparison between ink parts and non-ink parts
@@ -47,7 +49,7 @@ data_set.append(
 ```
 
 # 2023-06-15
-`src/2-5d-segmentaion-baseline-training`のEXP1とEXP2の比較結:
+`src/2-5d-segmentaion-baseline-training`のEXP1とEXP2の結果比較:
 ```
 [EXP 1]
 -------- exp_info -----------------
